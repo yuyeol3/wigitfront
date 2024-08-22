@@ -1,3 +1,21 @@
+table, th, tr, td {
+  border : 1px solid;
+  border-collapse: collapse;
+}
+
+code {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 0.5px solid;
+  background-color: black;
+  color: white;
+
+  /* scrollbar setting */
+  scrollbar-color: #424242 black; /* 스크롤바 색상 (#888: 핸들, #f1f1f1: 배경) */
+  scrollbar-width: thin; /* 스크롤바 너비: auto, thin, none */
+}
+
 /* Layout base */
 #app {
   position: fixed;
@@ -51,11 +69,11 @@
   float: left;
 }
 
-#title-content {
+/* #title-content {
   margin: 0;
   padding: 0;
   cursor: pointer;
-}
+} */
 
 #menu {
   float: right;
@@ -63,6 +81,37 @@
 
 #search {
   margin-right: 10px;
+  display: inline-block;
+}
+
+#search-bar {
+  width: 150px;
+}
+
+#view-image {
+  width: 100%;
+}
+
+#registerDiv label {
+  display: inline-block;
+  width: 10em;
+}
+
+#registerDiv div {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#title-button {
+  background-color: transparent;
+  border: 0px;
+  /* height: 100%; */
+  font-size: large;
+}
+
+#login-status {
+  margin: 0;
+  padding: 0;
 }
 
 /* Media queries for responsive adjustments */
@@ -78,6 +127,10 @@
 
   #header {
     border-bottom: 1px solid white;
+  }
+
+  #title-button {
+    color: white;
   }
 }
 

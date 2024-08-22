@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build rm -rf ../wigitback/assets & cp -R ./dist/assets ../wigitback/ & cp ./dist/index.html ../wigitback/",
-    "test" : "vite build & rm -rf ../test/assets & cp -R ./dist/assets ../test/ & cp ./dist/index.html ../test/",
+    "build": "vite build & rm -rf ../wigitback/assets/*.js & rm -rf ../wigitback/assets/*.css  & cp -R ./dist/assets ../wigitback/ & cp ./dist/index.html ../wigitback/",
+    "test" : "vite build & rm -rf ../test/assets/*.js & rm -rf ../test/assets/*.css  & cp -R ./dist/assets ../test/ & cp ./dist/index.html ../test/",
     "preview": "vite preview"
   },
   "devDependencies": {

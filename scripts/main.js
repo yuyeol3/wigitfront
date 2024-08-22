@@ -1,5 +1,6 @@
 import { routeHandler, handleNavigation } from './routes.js';
 import { setupSearch } from './search.js';
+import { loginStatusControl } from './login.js';
 import "../css/style.css";
 
 // Set up routing and search
@@ -9,4 +10,6 @@ document.querySelectorAll("a").forEach(link => {
 	link.addEventListener("click", handleNavigation);
 });
 
+// 초기화
 setupSearch();
+loginStatusControl();

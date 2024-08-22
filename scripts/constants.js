@@ -7,5 +7,9 @@ export const StatusMessages = {
 	LOGIN_REQUIRED: "login required",
 	INVALID_ACCESS: "invalid access",
 	MERGE_CONFLICT: "merge conflict",
-	DOC_DELETED: "doc deleted"
+	DOC_DELETED: "doc deleted",
+	DOC_REDIRECT : "doc redirect",
+	NO_FILE : "no file",
+	NO_SELECTED_FILE : "no selected file",
+	NOT_ALLOWED_FILE : "not allowed file",
 };

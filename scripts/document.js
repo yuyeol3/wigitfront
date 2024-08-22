@@ -4,6 +4,8 @@ import { convertDotNotationToPath, getBasePathFromHash } from './utils.js';
 // import { handleNotFoundError } from './error.js';
 import { fetchDocument, fetchDocumentData, updateDocument, createDocument, removeDocument, fetchDocumentHistory } from './api.js';
 import { marked } from "marked";
+import * as imageDoc from "./imageDoc.js";
+
 
 export function page404() {
 	setTitle("404");
@@ -19,15 +21,34 @@ export function page404() {
 	document.getElementById("content").appendChild(addDocumentLink);
 }
 
+/**
+ * 
+ * @param {string} hash 
+ * @returns 
+ */
 export async function loadDocument(hash) {
-	const documentContent = await fetchDocumentData(hash);
+	// 이미지인 경우 이미지 함수로 넘겨주기
+	if (decodeURI(hash).substring(0, 7) == "image::") {
+		imageDoc.loadImage(hash);
+		return;
+	}
+
+	const docu = await fetchDocument(hash);
 	let parsedContent;
-	if (documentContent != StatusMessages.DOC_NOT_EXIST) {
-		parsedContent = marked.parse(documentContent);
+
+	// 리다이렉션 명령인 경우
+	if (docu.status == StatusMessages.DOC_REDIRECT) {
+		location.hash = `#w/${docu.content}`;
+		return;
+	}
+
+	if (docu.status != StatusMessages.DOC_NOT_EXIST) {
+		parsedContent = marked.parse(docu.content);
 	} else {
 		page404();
 		return;
 	}
+		
 	const contentHtml = `
         <h1>${convertDotNotationToPath(decodeURI(hash))}</h1>
         <a href="./#edit/${convertDotNotationToPath(hash)}">수정하기</a>
@@ -47,21 +68,43 @@ export async function editDocument(hash) {
 	setTitle(`${decodeURI(hash)} 수정`);
 	const editHtml = `
       <h1>문서 수정</h1>
-      <input placeholder="제목">
+	  <h2>제목</h2>
+      <input placeholder="제목" id="doc-title">
+	  <h2>문서 내용</h2>
       <textarea id='edit'></textarea>
-      <input id="redirections" placeholder="리디렉션 목록">
-      <button id='upload'>업로드</button>
+      <h2>리디렉션</h2>
+	  <input id="redirections" placeholder="리디렉션 목록">
+	  <button id='upload'>업로드</button>
     `;
 	document.getElementById("content").innerHTML = editHtml;
 	
 	const uploadButton = document.getElementById("upload");
 	const editTextarea = document.getElementById("edit");
+	const redirectInput = document.getElementById("redirections");
+	const doctitleInput = document.getElementById("doc-title");
 	editTextarea.innerHTML = documentData.content;
+	redirectInput.value = documentData.redirections
+	doctitleInput.value = documentData.doc_title;
 	let documentHash = documentData.hash;
 
 	uploadButton.onclick = async () => {
 		const updatedContent = editTextarea.value;
-		const response = await updateDocument(getBasePathFromHash(hash), updatedContent, decodeURI(documentHash));
+		const updatedRedirect = redirectInput.value;
+		
+		let updatedTitle = documentData.doc_title;
+		if (doctitleInput.value != documentData.doc_title) {
+			if (confirm("문서 제목을 정말로 수정합니까?")) {
+				updatedTitle = doctitleInput.value;
+			}
+		}
+		const response = await updateDocument(
+			getBasePathFromHash(hash), // 문서 id
+			updatedContent,  // 업데이트된 내용
+			decodeURI(documentHash),   // 해쉬
+			updatedRedirect,  // 리다이렉션
+			updatedTitle  // 업데이트된 제목
+		);
+
 		if (response.status == StatusMessages.SUCCESS) {
 			alert("수정되었습니다.");
 			location.hash = "w/" + convertDotNotationToPath(hash);
@@ -123,12 +166,21 @@ export async function viewDocumentHistory(hash) {
 	loadHistory();
 
 	const contentOuterContainer = document.querySelector("#content-outer");
+
+	let reached_100 = false;
 	contentOuterContainer.onscroll = async () => {
+		if (reached_100)
+			return;
+
 		const scrollRatio = contentOuterContainer.clientHeight / (contentOuterContainer.scrollHeight - contentOuterContainer.scrollTop) * 100;
 		if (scrollRatio >= 90) {
 			start = limit;
 			limit += 30;
 			await loadHistory();
+		}
+
+		if (scrollRatio >= 100) {
+			reached_100 = true;
 		}
 	};
 }
@@ -142,15 +194,15 @@ export async function deleteDocument(hash) {
 	}
 }
 
-export async function displayLoginPage() {
-	setTitle("로그인");
-	const loginHtml = `
-        <h1>로그인</h1>
-        <form action="/login" method="post">
-            <input type="text" name="userID" placeholder="아이디" required>
-            <input type="password" name="userPW" placeholder="비밀번호" required>
-            <input type="submit" value="로그인">
-        </form>
-    `;
-	document.getElementById("content").innerHTML = loginHtml;
-}
+// export async function displayLoginPage() {
+// 	setTitle("로그인");
+// 	const loginHtml = `
+//         <h1>로그인</h1>
+//         <form action="/login" method="post">
+//             <input type="text" name="userID" placeholder="아이디" required>
+//             <input type="password" name="userPW" placeholder="비밀번호" required>
+//             <input type="submit" value="로그인">
+//         </form>
+//     `;
+// 	document.getElementById("content").innerHTML = loginHtml;
+// }

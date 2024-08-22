@@ -1,4 +1,6 @@
-import { loadDocument, editDocument, addDocument, viewDocumentHistory, deleteDocument, page404, displayLoginPage } from './document.js';
+import { loadDocument, editDocument, addDocument, viewDocumentHistory, deleteDocument, page404 } from './document.js';
+import { displayLoginPage, displayUserInfo, displayRegister } from './login.js';
+import { addImage, deleteImgAction } from "./imageDoc.js"
 import { formatPathToDotNotation, getFirstSegment } from './utils.js';
 
 const Routes = {
@@ -11,12 +13,18 @@ const Routes = {
 	"#login": displayLoginPage,
 	"#w": loadDocument,
 	"#history": viewDocumentHistory,
-	"#delete": deleteDocument
+	"#delete": deleteDocument,
+	// 이미지 처리
+	"#addImage" : addImage,
+	"#deleteImage": deleteImgAction,
+	"#userinfo": displayUserInfo,
+	"#register": displayRegister
 };
 
 export const routeHandler = async () => {
 	const contentOuterContainer = document.querySelector("#content-outer");
 	contentOuterContainer.onscroll = null;
+	contentOuterContainer.scrollTo({top:0, behavior:"instant"});
 
 	const currentPath = window.location.hash || window.location.pathname;
 	const formattedPath = formatPathToDotNotation(currentPath);
