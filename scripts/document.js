@@ -65,6 +65,8 @@ export async function editDocument(hash) {
 		loadDocument(hash);
 		return;
 	}
+	documentData.doc_title = convertDotNotationToPath(documentData.doc_title);
+
 	setTitle(`${decodeURI(hash)} 수정`);
 	const editHtml = `
       <h1>문서 수정</h1>
@@ -87,6 +89,20 @@ export async function editDocument(hash) {
 	doctitleInput.value = documentData.doc_title;
 	let documentHash = documentData.hash;
 
+	editTextarea.onkeydown = function(e) {
+		if (e.key == "Tab") {
+			e.preventDefault();
+			
+			/** @type {HTMLElement} */
+			const textarea = this;
+			const start = textarea.selectionStart;
+			const end = textarea.selectionEnd;
+			
+			textarea.value = textarea.value.substring(0, start) + "  " + textarea.value.substring(end);
+			textarea.selectionStart = textarea.selectionEnd = start + 2;
+		}
+	}
+
 	uploadButton.onclick = async () => {
 		const updatedContent = editTextarea.value;
 		const updatedRedirect = redirectInput.value;
@@ -102,7 +118,7 @@ export async function editDocument(hash) {
 			updatedContent,  // 업데이트된 내용
 			decodeURI(documentHash),   // 해쉬
 			updatedRedirect,  // 리다이렉션
-			updatedTitle  // 업데이트된 제목
+			getBasePathFromHash(updatedTitle)  // 업데이트된 제목
 		);
 
 		if (response.status == StatusMessages.SUCCESS) {
@@ -130,6 +146,20 @@ export async function addDocument(hash) {
 
 	const uploadButton = document.getElementById("upload");
 	const editTextarea = document.getElementById("edit");
+
+	editTextarea.onkeydown = function(e) {
+		if (e.key == "Tab") {
+			e.preventDefault();
+			
+			/** @type {HTMLElement} */
+			const textarea = this;
+			const start = textarea.selectionStart;
+			const end = textarea.selectionEnd;
+			
+			textarea.value = textarea.value.substring(0, start) + "  " + textarea.value.substring(end);
+			textarea.selectionStart = textarea.selectionEnd = start + 2;
+		}
+	}
 
 	uploadButton.onclick = async () => {
 		const newContent = editTextarea.value;

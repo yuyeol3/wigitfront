@@ -16,6 +16,9 @@ code {
   scrollbar-width: thin; /* 스크롤바 너비: auto, thin, none */
 }
 
+textarea:focus {
+  outline: none;
+}
 
 /* Layout base */
 #app {
@@ -39,12 +42,33 @@ code {
   border-bottom: 1px solid black;
 }
 
-#content-outer {
+#progress-stat {
   position: fixed;
   top: 46px;
   left: 0;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 2px;
+}
+
+#progress-bar {
+  position: fixed;
+  height: 2px;
+  width: 0%;
+  top: 46px;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  background-color: #00bfff;
+}
+
+#content-outer {
+  position: fixed;
+  top: 47px;
+  left: 0;
   width: 100%;
-  height: calc(100% - 46px);
+  height: calc(100% - 47px);
   overflow-y: scroll;
 }
 

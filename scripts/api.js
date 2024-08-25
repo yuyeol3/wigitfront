@@ -1,4 +1,13 @@
-import { expr } from "jquery";
+import { setProgressbar } from "./utils";
+
+export async function fetch2(url, params) {
+	setProgressbar(0);
+	setProgressbar(10);
+	const response = await fetch(url, params);
+	setProgressbar(100);
+	return response
+}
+
 
 /**
  * 문서를 fetch하는 함수

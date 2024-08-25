@@ -22,3 +22,22 @@ export function setTitle(title) {
 	const titleElement = document.querySelector("title");
 	titleElement.innerText = title;
 }
+
+export async function setProgressbar(newWidth) {
+	const progressBar = document.getElementById("progress-bar");
+	const currentWidth = progressBar.style.width == "" ? 0 : parseInt(progressBar.style.width);
+
+	// 현재 넓이보다 새 넓이가 작은 경우
+	if (currentWidth > newWidth) {
+		progressBar.style.width = `${newWidth}%`;
+		return;
+	}
+
+	// 현재 넓이보다 새 넓이가 큰 경우
+	for (let i = currentWidth; i <= newWidth; ++i) {
+		setTimeout(()=>{
+			progressBar.style.width = `${i}%`;
+		}, i*5);
+		
+	}
+}

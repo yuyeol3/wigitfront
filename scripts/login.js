@@ -22,11 +22,13 @@ export async function loginStatusControl() {
     const loginStatus = document.getElementById("login-status");
 
     if (userInfo.status == StatusMessages.LOGIN_REQUIRED) {
+        loginStatus.innerText = "로그인"
+        loginStatus.setAttribute("href", `./#login`);
         return;
     } else {
         const userID = userInfo.content.user_id;
         loginStatus.innerText = userID;
-        loginStatus.setAttribute("href", `./#userinfo/${userID}`)
+        loginStatus.setAttribute("href", `./#userinfo/${userID}`);
 
     }
 }
@@ -38,7 +40,9 @@ export async function displayUserInfo(userId) {
 
     if (userData.status == StatusMessages.LOGIN_REQUIRED) {
         alert("로그인이 필요합니다.")
-        window.history.back();
+        location.hash = "login";
+        loginStatusControl();
+        return;
     }
 
     setTitle(`사용자 : ${userInfo.user_id}`);
