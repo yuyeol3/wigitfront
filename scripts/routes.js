@@ -1,5 +1,5 @@
 import { loadDocument, editDocument, addDocument, viewDocumentHistory, deleteDocument, page404 } from './document.js';
-import { displayLoginPage, displayUserInfo, displayRegister } from './login.js';
+import { displayLoginPage, displayUserInfo, displayRegister, displayRegisterComplete, displayChangeInfo, displayPasswordCheck, displayPasswordChange } from './login.js';
 import { addImage, deleteImgAction } from "./imageDoc.js"
 import { formatPathToDotNotation, getFirstSegment } from './utils.js';
 
@@ -17,8 +17,13 @@ const Routes = {
 	// 이미지 처리
 	"#addImage" : addImage,
 	"#deleteImage": deleteImgAction,
+
+	// 유저 로그인, 회원가입 등 처리
 	"#userinfo": displayUserInfo,
-	"#register": displayRegister
+	"#register": displayRegister,
+	"#registerComplete" : displayRegisterComplete,
+	"#changeUserInfo" : ()=> {displayPasswordCheck(displayChangeInfo)},
+	"#changeUserPassword" : ()=>{ displayPasswordCheck(displayPasswordChange) },
 };
 
 export const routeHandler = async () => {
@@ -31,6 +36,7 @@ export const routeHandler = async () => {
 	let routeFunction = Routes[getFirstSegment(currentPath)] || Routes[404];
 
 	formattedPath !== "" ? routeFunction(formattedPath) : routeFunction();
+
 };
 
 export const handleNavigation = (event) => {

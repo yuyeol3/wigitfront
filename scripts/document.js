@@ -155,9 +155,12 @@ export async function viewDocumentHistory(hash) {
 
 	const loadHistory = async () => {
 		(await fetchDocumentHistory(hash, start, limit)).content.forEach(historyItem => {
+			const commitedDate = new Date(historyItem.updated_time);
+			const stringDate = commitedDate.toISOString().split("T")[0];
+
 			let historyElement = document.createElement("p");
 			historyElement.innerHTML = `
-                - ${historyItem.message.split(" ")[0]} (<a href="./#w/${hash}&${historyItem.hash}">보기</a>|<a href="./#edit/${hash}&${historyItem.hash}">이 버전에서부터 수정하기</a>)
+                - ${stringDate}(<a href="./#w/${hash}&${historyItem.hash}">보기</a>|<a href="./#edit/${hash}&${historyItem.hash}">이 버전에서부터 수정하기</a>)(by ${historyItem.message.split(" ")[0]})
             `;
 			historyContainer.appendChild(historyElement);
 		});

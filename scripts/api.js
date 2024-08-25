@@ -1,3 +1,5 @@
+import { expr } from "jquery";
+
 /**
  * 문서를 fetch하는 함수
  * @param {string} documentId 
@@ -91,9 +93,17 @@ export async function deleteImage(imageName) {
 	return response.ok ? await response.json() : console.error("fetch failed");
 }
 
+/**
+ * 
+ * @param {*} isDetailed 
+ * @returns {{user_id:string, registered_date:string, user_status:string, email:string} | undefined}
+ */
 export async function getUserInfo(isDetailed=false) {
 	const fetchURL = '/userinfo/' + (isDetailed ? "detailed" : "");
 
+	/**
+	 * @type {{user_id:string, registered_date:string, user_status:string, email:string}}
+	 */
 	const response = await fetch(fetchURL);
 
 	return response.ok ? await response.json() : console.error("fetch error");
@@ -111,5 +121,61 @@ export async function checkIdUsable(newId) {
 		},
 		body: JSON.stringify(content)
 	});
+	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
+}
+
+export async function registUser(user_id, pwd, email) {
+	const content = {
+		user_id : user_id,
+		pwd : btoa(pwd),
+		email : email
+	}
+	const response = await fetch(`/register`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(content)
+	});
+	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
+}
+
+export async function checkPwd(pwd) {
+	const content = {
+		pwd : btoa(pwd)
+	};
+
+	const response = await fetch(`/userpwdcheck`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(content)
+	});
+	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
+}
+
+export async function setUser(args) {
+	const content = {};
+	
+	if (args.email !== undefined) {
+		content.email = args.email;
+	}
+
+	if (args.pwd !== undefined) {
+		content.pwd = btoa(args.pwd);
+	}
+	const response = await fetch(`/setuserinfo`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(content)
+	});
+	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
+}
+
+export async function deleteUser() {
+	const response = await fetch(`/deleteuser`);
 	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
 }

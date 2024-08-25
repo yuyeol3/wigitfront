@@ -12,4 +12,5 @@ export const StatusMessages = {
 	NO_FILE : "no file",
 	NO_SELECTED_FILE : "no selected file",
 	NOT_ALLOWED_FILE : "not allowed file",
+	FAILURE : "failure",
 };
