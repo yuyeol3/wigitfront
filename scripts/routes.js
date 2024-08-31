@@ -13,7 +13,7 @@ const Routes = {
 	"#login": displayLoginPage,
 	"#w": loadDocument,
 	"#history": viewDocumentHistory,
-	"#delete": deleteDocument,
+	// "#delete": deleteDocument,
 	// 이미지 처리
 	"#addImage" : addImage,
 	"#deleteImage": deleteImgAction,

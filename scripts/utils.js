@@ -23,6 +23,8 @@ export function setTitle(title) {
 	titleElement.innerText = title;
 }
 
+
+// const staticTimeouts = []
 export async function setProgressbar(newWidth) {
 	const progressBar = document.getElementById("progress-bar");
 	const currentWidth = progressBar.style.width == "" ? 0 : parseInt(progressBar.style.width);
@@ -37,7 +39,14 @@ export async function setProgressbar(newWidth) {
 	for (let i = currentWidth; i <= newWidth; ++i) {
 		setTimeout(()=>{
 			progressBar.style.width = `${i}%`;
-		}, i*5);
-		
+		}, i*2);
 	}
+
+	// 끝나면 사라지게 처리
+	if (newWidth >= 100) {
+		setTimeout(()=>{
+			progressBar.style.width = `${0}%`;
+		}, (newWidth+1)*2);
+	}
+
 }

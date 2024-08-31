@@ -53,10 +53,11 @@ export async function loadDocument(hash) {
         <h1>${convertDotNotationToPath(decodeURI(hash))}</h1>
         <a href="./#edit/${convertDotNotationToPath(hash)}">수정하기</a>
         <a href="./#history/${convertDotNotationToPath(hash)}">히스토리 보기</a>
-        <a href="./#delete/${convertDotNotationToPath(hash)}">삭제하기</a>
+        <a href="javascript:null;" id="deleteThis">삭제하기</a>
     `;
 	document.getElementById("content").innerHTML = contentHtml + parsedContent;
-	setTitle(`wigit: ${decodeURI(hash)}`);
+	document.getElementById("deleteThis").onclick = () => {deleteDocument(hash)};
+	setTitle(`wigit: ${convertDotNotationToPath(decodeURI(hash))}`);
 }
 
 export async function editDocument(hash) {
@@ -72,23 +73,42 @@ export async function editDocument(hash) {
       <h1>문서 수정</h1>
 	  <h2>제목</h2>
       <input placeholder="제목" id="doc-title">
-	  <h2>문서 내용</h2>
+	  <h2>문서 내용 <button id="preview">결과 미리보기</button></h2>
       <textarea id='edit'></textarea>
       <h2>리디렉션</h2>
 	  <input id="redirections" placeholder="리디렉션 목록">
+	  
 	  <button id='upload'>업로드</button>
+	  <dialog id="preview-dialog">
+	 	<p><button id="close-dialog">X</button> 결과 미리보기</p>
+	 	<div id="preview-content"></div>
+	  </dialog>
     `;
 	document.getElementById("content").innerHTML = editHtml;
 	
+	/** @type {HTMLElement} 업로드 버튼 */
 	const uploadButton = document.getElementById("upload");
+	/** @type {HTMLElement} 문서 입력 textarea */
 	const editTextarea = document.getElementById("edit");
+	/** @type {HTMLElement} redirection 입력 input */
 	const redirectInput = document.getElementById("redirections");
+	/** @type {HTMLElement} title 입력 input */
 	const doctitleInput = document.getElementById("doc-title");
-	editTextarea.innerHTML = documentData.content;
-	redirectInput.value = documentData.redirections
-	doctitleInput.value = documentData.doc_title;
-	let documentHash = documentData.hash;
+	/** @type {HTMLElement} preview 보기 버튼 */
+	const previewButton = document.getElementById("preview");
+	/** @type {HTMLElement} preview dialog */
+	const previewDialog = document.getElementById("preview-dialog");
+	/** @type {HTMLElement} 결과 미리보기 content div */
+	const previewContentDiv = document.getElementById("preview-content");
+	/** @type {HTMLElement} dialog 닫기 */
+	const closePreviewButton = document.getElementById("close-dialog");
 
+	editTextarea.innerHTML = documentData.content;  // 문서 내용 넣어주기
+	redirectInput.value = documentData.redirections  // redirection 내용 넣어주기
+	doctitleInput.value = documentData.doc_title;  // title 넣어주기
+	let documentHash = documentData.head_hash;  // hash는 head의 hash로 설정
+
+	// tab 입력 시 들여쓰기 추가
 	editTextarea.onkeydown = function(e) {
 		if (e.key == "Tab") {
 			e.preventDefault();
@@ -103,6 +123,20 @@ export async function editDocument(hash) {
 		}
 	}
 
+	// 모달 창 보여주기
+	previewButton.onclick = () => {
+		previewDialog.showModal();
+		previewContentDiv.innerHTML = marked.parse(editTextarea.value);
+	}
+
+	// 모달 창 닫기
+	closePreviewButton.onclick = ()=> {
+		previewDialog.close();
+	}
+
+
+
+	// 업로드 처리
 	uploadButton.onclick = async () => {
 		const updatedContent = editTextarea.value;
 		const updatedRedirect = redirectInput.value;
@@ -138,14 +172,26 @@ export async function editDocument(hash) {
 export async function addDocument(hash) {
 	setTitle(`${decodeURI(hash)} 추가`);
 	const addHtml = `
-      <h1>문서 추가</h1>
+      <h1>문서 추가 <button id="preview">결과 미리보기</button></h1>
       <textarea id='edit'></textarea>
       <button id='upload'>업로드</button>
+	  <dialog id="preview-dialog">
+	 	<p><button id="close-dialog">X</button> 결과 미리보기</p>
+	 	<div id="preview-content"></div>
+	  </dialog>
     `;
 	document.getElementById("content").innerHTML = addHtml;
 
 	const uploadButton = document.getElementById("upload");
 	const editTextarea = document.getElementById("edit");
+	/** @type {HTMLElement} preview 보기 버튼 */
+	const previewButton = document.getElementById("preview");
+	/** @type {HTMLElement} preview dialog */
+	const previewDialog = document.getElementById("preview-dialog");
+	/** @type {HTMLElement} 결과 미리보기 content div */
+	const previewContentDiv = document.getElementById("preview-content");
+	/** @type {HTMLElement} dialog 닫기 */
+	const closePreviewButton = document.getElementById("close-dialog");
 
 	editTextarea.onkeydown = function(e) {
 		if (e.key == "Tab") {
@@ -160,6 +206,20 @@ export async function addDocument(hash) {
 			textarea.selectionStart = textarea.selectionEnd = start + 2;
 		}
 	}
+
+	// 모달 창 보여주기
+	previewButton.onclick = () => {
+		previewDialog.showModal();
+		previewContentDiv.innerHTML = marked.parse(editTextarea.value);
+	}
+
+	// 모달 창 닫기
+	closePreviewButton.onclick = ()=> {
+		previewDialog.close();
+	}
+	
+	
+
 
 	uploadButton.onclick = async () => {
 		const newContent = editTextarea.value;
@@ -222,8 +282,9 @@ export async function deleteDocument(hash) {
 	const documentHash = (await fetchDocument(hash)).hash;
 	if (confirm("이 문서를 삭제합니까?")) {
 		const response = await removeDocument(hash, documentHash);
-		location.hash = `w/${convertDotNotationToPath(hash)}`;
 		alert(response.status);
+		location.href = `#w/${convertDotNotationToPath(hash)}`;
+		// location.reload();
 	}
 }
 

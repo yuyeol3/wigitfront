@@ -13,8 +13,13 @@
         <div id="menu">
           <a href="./#login" id="login-status">로그인</a>
           <div id="search">
-            <input id="search-bar">
-            <button id="search-btn">🔍</button>
+            <form action="javascript:null;">
+              <input id="search-bar" list="searched-list">
+              <button id="search-btn">🔍</button>
+              <datalist id="searched-list">
+              </datalist>
+            </form>
+
           </div>
         </div>
       </div>

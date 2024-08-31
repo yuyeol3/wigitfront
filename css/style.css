@@ -7,7 +7,7 @@ code {
   display: inline-block;
   max-width: 100%;
   overflow-x: auto;
-  border: 0.5px solid;
+  /* border: 0.5px solid; */
   background-color: black;
   color: white;
 
@@ -19,6 +19,16 @@ code {
 textarea:focus {
   outline: none;
 }
+
+button, input[type="submit"] {
+  background-color: #add8e6;
+  border: 0px;
+  border-radius: 3px;
+  font-weight: bold;
+  height: 22.5px;
+}
+
+
 
 /* Layout base */
 #app {
@@ -139,6 +149,20 @@ textarea:focus {
   padding: 0;
 }
 
+#preview-dialog {
+  width: 80%;
+  height: 80%;
+  border-radius: 1%;
+  border: 0px;
+}
+
+#preview-content {
+  height: 90%;
+  width: 100%;
+  margin: 0;
+  padding: 0px auto;
+  overflow-y: scroll;
+}
 
 /* Media queries for responsive adjustments */
 @media (prefers-color-scheme: dark) {
@@ -158,7 +182,14 @@ textarea:focus {
   #title-button {
     color: white;
   }
+
+  #preview-dialog {
+    background-color: #313131;
+    color: #fff;
+  }
 }
+
+
 
 @media (max-width: 900px) {
   #content {

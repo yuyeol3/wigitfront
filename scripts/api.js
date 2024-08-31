@@ -1,11 +1,12 @@
 import { setProgressbar } from "./utils";
 
 export async function fetch2(url, params) {
-	setProgressbar(0);
-	setProgressbar(10);
+	await setProgressbar(0);
+	await setProgressbar(10);
 	const response = await fetch(url, params);
-	setProgressbar(100);
-	return response
+	await setProgressbar(100);
+	// setTimeout(()=>{setProgressbar(0)} , 450);
+	return response;
 }
 
 
@@ -15,7 +16,7 @@ export async function fetch2(url, params) {
  * @returns {{hash:string, content:string, status:string, redirections:string, doc_title:stirng}} documentId에 대응하는 문서 데이터를 리턴
  */
 export async function fetchDocument(documentId) {
-	const response = await fetch(`/getdoc/${documentId}`);
+	const response = await fetch2(`/getdoc/${documentId}`);
 	return response.ok ? await response.json() : console.error("fetch failed");
 }
 
@@ -37,7 +38,7 @@ export async function updateDocument(documentId, content, hash, redirections, do
 		doc_title: doc_title,
 	};
 	console.log(requestBody);
-	const response = await fetch(`/editdoc/${documentId}`, {
+	const response = await fetch2(`/editdoc/${documentId}`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -51,7 +52,7 @@ export async function removeDocument(documentId, hash) {
 	const requestBody = {
 		"hash": hash
 	};
-	const response = await fetch(`/deletedoc/${documentId}`, {
+	const response = await fetch2(`/deletedoc/${documentId}`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -62,7 +63,7 @@ export async function removeDocument(documentId, hash) {
 }
 
 export async function createDocument(documentId, content) {
-	const response = await fetch(`/adddoc/${documentId}`, {
+	const response = await fetch2(`/adddoc/${documentId}`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -73,7 +74,7 @@ export async function createDocument(documentId, content) {
 }
 
 export async function fetchDocumentHistory(documentId, start, limit) {
-	const response = await fetch(`/gethistory/${documentId}&${start}&${limit}`);
+	const response = await fetch2(`/gethistory/${documentId}&${start}&${limit}`);
 	return response.ok ? await response.json() : console.error("fetch failed");
 }
 
@@ -83,7 +84,7 @@ export async function uploadImage(imageName, imagePath) {
 	formData.append('file',imagePath);
 
 
-	const response = await fetch(`/addimage/${imageName}`, {
+	const response = await fetch2(`/addimage/${imageName}`, {
 		method: 'POST',
 		body: formData
 	});
@@ -93,12 +94,12 @@ export async function uploadImage(imageName, imagePath) {
 
 export async function fetchImage(imageName) {
 
-	const response = await fetch(`/getimage/${imageName}`);
+	const response = await fetch2(`/getimage/${imageName}`);
 	return response.ok ? await response.json() : console.error("fetch failed");
 }
 
 export async function deleteImage(imageName) {
-	const response = await fetch(`/deleteimage/${imageName}`);
+	const response = await fetch2(`/deleteimage/${imageName}`);
 	return response.ok ? await response.json() : console.error("fetch failed");
 }
 
@@ -113,7 +114,7 @@ export async function getUserInfo(isDetailed=false) {
 	/**
 	 * @type {{user_id:string, registered_date:string, user_status:string, email:string}}
 	 */
-	const response = await fetch(fetchURL);
+	const response = await fetch2(fetchURL);
 
 	return response.ok ? await response.json() : console.error("fetch error");
 }
@@ -123,7 +124,7 @@ export async function checkIdUsable(newId) {
 		user_id : newId
 	};
 
-	const response = await fetch(`/useridcheck`, {
+	const response = await fetch2(`/useridcheck`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -139,7 +140,7 @@ export async function registUser(user_id, pwd, email) {
 		pwd : btoa(pwd),
 		email : email
 	}
-	const response = await fetch(`/register`, {
+	const response = await fetch2(`/register`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -154,7 +155,7 @@ export async function checkPwd(pwd) {
 		pwd : btoa(pwd)
 	};
 
-	const response = await fetch(`/userpwdcheck`, {
+	const response = await fetch2(`/userpwdcheck`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -174,7 +175,7 @@ export async function setUser(args) {
 	if (args.pwd !== undefined) {
 		content.pwd = btoa(args.pwd);
 	}
-	const response = await fetch(`/setuserinfo`, {
+	const response = await fetch2(`/setuserinfo`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -185,6 +186,11 @@ export async function setUser(args) {
 }
 
 export async function deleteUser() {
-	const response = await fetch(`/deleteuser`);
+	const response = await fetch2(`/deleteuser`);
+	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
+}
+
+export async function search(to_search) {
+	const response = await fetch(`/search/${to_search}`);
 	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
 }
