@@ -16,7 +16,7 @@ const Routes = {
 	// "#delete": deleteDocument,
 	// 이미지 처리
 	"#addImage" : addImage,
-	"#deleteImage": deleteImgAction,
+	// "#deleteImage": deleteImgAction,
 
 	// 유저 로그인, 회원가입 등 처리
 	"#userinfo": displayUserInfo,
