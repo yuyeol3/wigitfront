@@ -66,12 +66,13 @@ export async function loadImage(imageHashId) {
 
     const contentHtml = `
         <h1>${convertDotNotationToPath(decodeURI(imageHashId))}</h1>
-        <a href="./#deleteImage/${convertDotNotationToPath(imageHashId)}">삭제하기</a>
+        <a href="javascript:null;" id="deleteThis">삭제하기</a>
         <img src="${imageDocu.content}" id="view-image" style="">
     `
     // const imageTag = `<img src="${imageDocu.content}">`
     document.getElementById("content").innerHTML = contentHtml;
     setTitle(`wigit: ${decodeURI(imageHashId)}`);
+    document.getElementById("deleteThis").onclick = ()=> { deleteImgAction(imageHashId); }
 }
 
 export async function deleteImgAction(imageHashId) {
@@ -79,6 +80,7 @@ export async function deleteImgAction(imageHashId) {
     if (confirm("이 이미지를 삭제합니까?")) {
         const res = await deleteImage(getBasePathFromHash(imageHashId));
         alert(res.status);
+        location.href =`#w/${imageHashId}`
     }
     
 }
