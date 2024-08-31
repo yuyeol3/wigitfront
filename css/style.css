@@ -80,12 +80,16 @@ button, input[type="submit"] {
   width: 100%;
   height: calc(100% - 47px);
   overflow-y: scroll;
+  background-color: #f8f5f5;
 }
 
 #content {
-  width: 80%;
+  width: 70%;
   margin: 0 auto;
-  margin-bottom: 20vh;
+  margin-bottom: 21px;
+  background-color: white;
+  padding: 0 10px 20vh 10px;
+  border-radius: 10px;
 }
 
 #doc-history, #edit {
@@ -119,9 +123,33 @@ button, input[type="submit"] {
   display: inline-block;
 }
 
+#searchbar-wrapper {
+  display: inline-block;
+}
+
+#search-list {
+  display: none;
+  position: fixed;
+  width: 150px;
+  height: 200px;
+  background-color: white;
+  overflow-y: scroll;
+  border: 0.5px solid;
+  /* z-index: index 1; ; */
+}
+
 #search-bar {
   width: 150px;
 }
+
+.searchopt {
+  /* border-top: 0.5px solid ; */
+  border-bottom: 0.5px solid ;
+  margin: 1px;
+  cursor: pointer;
+  padding: 3px;
+}
+
 
 #view-image {
   width: 100%;
@@ -187,19 +215,40 @@ button, input[type="submit"] {
     background-color: #313131;
     color: #fff;
   }
+
+  #content-outer {
+    background-color: #313131;
+  }
+
+  #content {
+    background-color: #1b1b1b;
+    color: white;
+  }
+
+  #search-list {
+    background-color: #313131;
+    color: white;
+  }
 }
 
 
 
 @media (max-width: 900px) {
+  #content-outer {
+    background-color: transparent;
+  }
+
   #content {
     width: calc(100% - 40px);
     padding: 20px;
+    background-color: transparent;
   }
+
 }
 
 @media (min-width: 901px) and (max-width: 1200px) {
   #content {
     width: 90%;
   }
+
 }

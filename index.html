@@ -8,24 +8,27 @@
   </head>
   <body>
     <div id="app">
+      <div id="progress-stat"><div id="progress-bar"></div></div>
+      <div id="content-outer">
+        <div id="content"></div>
+      </div>
       <div id="header">
         <div id="title"><button id="title-button" onclick="location.href='./#'">WIGIT</button></div>
         <div id="menu">
           <a href="./#login" id="login-status">로그인</a>
           <div id="search">
             <form action="javascript:null;">
-              <input id="search-bar" list="searched-list">
+              <div id="searchbar-wrapper">
+                  <input id="search-bar" type="search">
+                  <div id="search-list"></div>
+              </div>
               <button id="search-btn">🔍</button>
-              <datalist id="searched-list">
-              </datalist>
+              <!-- <datalist id="searched-list">
+              </datalist> -->
             </form>
 
           </div>
         </div>
-      </div>
-      <div id="progress-stat"><div id="progress-bar"></div></div>
-      <div id="content-outer">
-        <div id="content"></div>
       </div>
     </div>
     <script src="./scripts/main.js" type="module"></script>
