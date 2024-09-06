@@ -1,4 +1,4 @@
-import { loadDocument, editDocument, addDocument, viewDocumentHistory, deleteDocument, page404 } from './document.js';
+import { loadDocument, editDocument, addDocument, viewDocumentHistory, deleteDocument, page404, diffDocument, diffDisplay } from './document.js';
 import { displayLoginPage, displayUserInfo, displayRegister, displayRegisterComplete, displayChangeInfo, displayPasswordCheck, displayPasswordChange } from './login.js';
 import { addImage, deleteImgAction } from "./imageDoc.js"
 import { formatPathToDotNotation, getFirstSegment } from './utils.js';
@@ -24,6 +24,8 @@ const Routes = {
 	"#registerComplete" : displayRegisterComplete,
 	"#changeUserInfo" : ()=> {displayPasswordCheck(displayChangeInfo)},
 	"#changeUserPassword" : ()=>{ displayPasswordCheck(displayPasswordChange) },
+	"#diffSelect" : diffDocument,
+	"#diff" : diffDisplay
 };
 
 export const routeHandler = async () => {

@@ -1,3 +1,7 @@
+/* * {
+  font-family: Arial, Helvetica, sans-serif;
+} */
+
 table, th, tr, td {
   border : 1px solid;
   border-collapse: collapse;
@@ -28,7 +32,17 @@ button, input[type="submit"] {
   height: 22.5px;
 }
 
+a {
+  text-decoration: none;
+  color: #4747ff;
+}
 
+input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
+  border: 0;
+  border-radius: 3px;
+  height: 22.5px;
+  background-color: #ececec;
+}
 
 /* Layout base */
 #app {
@@ -54,7 +68,7 @@ button, input[type="submit"] {
 
 #progress-stat {
   position: fixed;
-  top: 46px;
+  top: 0;
   left: 0;
   margin: 0;
   padding: 0;
@@ -66,7 +80,7 @@ button, input[type="submit"] {
   position: fixed;
   height: 2px;
   width: 0%;
-  top: 46px;
+  top: 0;
   left: 0;
   margin: 0;
   padding: 0;
@@ -116,6 +130,10 @@ button, input[type="submit"] {
 
 #menu {
   float: right;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 #search {
@@ -126,6 +144,10 @@ button, input[type="submit"] {
 #searchbar-wrapper {
   display: inline-block;
 }
+
+/* #searchbar-wrapper:hover #search-list{
+  display: block;
+} */
 
 #search-list {
   display: none;
@@ -138,9 +160,16 @@ button, input[type="submit"] {
   /* z-index: index 1; ; */
 }
 
+#search-list:hover {
+  display: block;
+}
+
 #search-bar {
   width: 150px;
+  margin-left: 4px;
+  /* height: 100%; */
 }
+
 
 .searchopt {
   /* border-top: 0.5px solid ; */
@@ -173,8 +202,8 @@ button, input[type="submit"] {
 }
 
 #login-status {
-  margin: 0;
-  padding: 0;
+  display: inline-block;
+  height: 100%;
 }
 
 #preview-dialog {
@@ -190,6 +219,24 @@ button, input[type="submit"] {
   margin: 0;
   padding: 0px auto;
   overflow-y: scroll;
+}
+
+#loginForm input[type="text"], #loginForm input[type="password"] {
+  margin: 2px;
+}
+
+
+#diffDiv {
+  /* overflow-y: scroll; */
+  width: 100%;
+}
+
+#diffDiv .diff-add {
+  color: green;
+}
+
+#diffDiv .diff-del {
+  color: red;
 }
 
 /* Media queries for responsive adjustments */
@@ -229,8 +276,17 @@ button, input[type="submit"] {
     background-color: #313131;
     color: white;
   }
-}
 
+  input:not( input[type="button"], input[type="submit"], input[type="checkbox"]), textarea {
+    background-color: #646464;
+    color: white;
+    
+  }
+
+  input::placeholder {
+    color: white;
+  }
+}
 
 
 @media (max-width: 900px) {
@@ -244,11 +300,37 @@ button, input[type="submit"] {
     background-color: transparent;
   }
 
+  #loginForm {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+  }
+
+  #loginBtn {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    height: 100%;
+    width: 90px;
+    margin-left: 2px;
+    /* width: 100px; */
+  }
+
+  #loginForm input[name="userID"] {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #loginForm input[name="userPW"] {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
 }
 
 @media (min-width: 901px) and (max-width: 1200px) {
   #content {
     width: 90%;
   }
+
+
 
 }

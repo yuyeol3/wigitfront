@@ -7,7 +7,7 @@ export function setupSearch() {
     const searchList = document.getElementById("search-list");
 
 	searchBar.onfocus = () => {searchList.style.display = "block";}
-	searchBar.onblur = () => {setTimeout(()=>{ searchList.style.display = "none";}, 200);}
+	searchBar.onblur = () => {searchList.style.display = "";}
 
     async function handleSearch(e, title) {
         if (searchBar.value === "")

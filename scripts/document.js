@@ -1,8 +1,8 @@
-import { setTitle } from './utils.js';
+import { diffContentParser, setTitle, urlArgParser } from './utils.js';
 import { StatusMessages } from './constants.js';
 import { convertDotNotationToPath, getBasePathFromHash } from './utils.js';
 // import { handleNotFoundError } from './error.js';
-import { fetchDocument, fetchDocumentData, updateDocument, createDocument, removeDocument, fetchDocumentHistory } from './api.js';
+import { fetchDocument, fetchDocumentData, updateDocument, createDocument, removeDocument, fetchDocumentHistory, diff } from './api.js';
 import { marked } from "marked";
 import * as imageDoc from "./imageDoc.js";
 
@@ -57,7 +57,7 @@ export async function loadDocument(hash) {
     `;
 	document.getElementById("content").innerHTML = contentHtml + parsedContent;
 	document.getElementById("deleteThis").onclick = () => {deleteDocument(hash)};
-	setTitle(`wigit: ${convertDotNotationToPath(decodeURI(hash))}`);
+	setTitle(`WIGIT : ${convertDotNotationToPath(decodeURI(hash))}`);
 }
 
 export async function editDocument(hash) {
@@ -218,15 +218,15 @@ export async function addDocument(hash) {
 		previewDialog.close();
 	}
 	
-	
-
 
 	uploadButton.onclick = async () => {
 		const newContent = editTextarea.value;
 		const newDocumentHash = hash;
 		const response = await createDocument(newDocumentHash, newContent);
-		alert(response);
-		location.hash = "w/" + convertDotNotationToPath(newDocumentHash);
+		alert(response.status);
+		
+		if (response.status == StatusMessages.SUCCESS) 
+			location.hash = "w/" + convertDotNotationToPath(newDocumentHash);
 	};
 }
 
@@ -250,7 +250,7 @@ export async function viewDocumentHistory(hash) {
 
 			let historyElement = document.createElement("p");
 			historyElement.innerHTML = `
-                - ${stringDate}(<a href="./#w/${hash}&${historyItem.hash}">보기</a>|<a href="./#edit/${hash}&${historyItem.hash}">이 버전에서부터 수정하기</a>)(by ${historyItem.message.split(" ")[0]})
+                - ${stringDate}(<a href="./#w/${hash}&${historyItem.hash}">보기</a>|<a href="./#edit/${hash}&${historyItem.hash}">이 버전에서부터 수정하기</a>|<a href="./#diffSelect/${hash}/${historyItem.hash}">비교하기</a>)(by ${historyItem.message.split(" ")[0]})
             `;
 			historyContainer.appendChild(historyElement);
 		});
@@ -258,6 +258,7 @@ export async function viewDocumentHistory(hash) {
 
 	loadHistory();
 
+	// 스크롤 시 추가 히스토리 로딩
 	const contentOuterContainer = document.querySelector("#content-outer");
 
 	let reached_100 = false;
@@ -276,6 +277,8 @@ export async function viewDocumentHistory(hash) {
 			reached_100 = true;
 		}
 	};
+
+	// 비교하기
 }
 
 export async function deleteDocument(hash) {
@@ -287,7 +290,115 @@ export async function deleteDocument(hash) {
 		// location.reload();
 	}
 }
+(()=>{}).toString
 
+export async function diffDocument(path) {
+	const pathList = path.split(".");
+	const hash = pathList.slice(0, -1).join(".");
+
+
+
+
+	setTitle(`${decodeURI(hash)} 버전 비교하기`);
+	const historyHtml = `
+        <div id="doc-history">
+            <h1>비교할 버전을 선택하세요.</h1>
+        </div>
+    `;
+	document.getElementById("content").innerHTML = historyHtml;
+	const historyContainer = document.getElementById("doc-history");
+
+	let start = 0;
+	let limit = 30;
+
+	const loadHistory = async () => {
+		(await fetchDocumentHistory(hash, start, limit)).content.forEach(historyItem => {
+			const commitedDate = new Date(historyItem.updated_time);
+			const stringDate = commitedDate.toISOString().split("T")[0];
+
+			let historyElement = document.createElement("p");
+			historyElement.innerHTML = `
+                - ${stringDate}(<a href="./#diff/name=${hash}&src=${pathList.at(-1)}&dest=${historyItem.hash}">비교하기</a>)(by ${historyItem.message.split(" ")[0]})
+            `;
+			// historyElement.querySelector("a").onclick = () => {diffDisplay(pathList.at(-1), historyItem.hash)}
+
+			historyContainer.appendChild(historyElement);
+		});
+	};
+	loadHistory();
+
+	// 스크롤 시 추가 히스토리 로딩
+	const contentOuterContainer = document.querySelector("#content-outer");
+
+	let reached_100 = false;
+	contentOuterContainer.onscroll = async () => {
+		if (reached_100)
+			return;
+
+		const scrollRatio = contentOuterContainer.clientHeight / (contentOuterContainer.scrollHeight - contentOuterContainer.scrollTop) * 100;
+		if (scrollRatio >= 90) {
+			start = limit;
+			limit += 30;
+			await loadHistory();
+		}
+
+		if (scrollRatio >= 100) {
+			reached_100 = true;
+		}
+	};
+
+	// 비교하기
+}
+
+
+export async function diffDisplay(hash) {
+	// location.hash = `${location.hash}&${dest}`
+	// console.log(hash);
+	const args = urlArgParser(hash);
+
+	const response = await diff(args.name, args.src, args.dest);
+	
+	const parsedContent = await diffContentParser(response.content);
+	
+	document.getElementById("content").innerHTML = `
+	<h1>비교</h1>
+	<div id="diffDiv">
+	</div>
+	`;
+	
+	const diffDiv = document.getElementById("diffDiv");
+
+	if (parsedContent.join("").trim() === "") {
+		diffDiv.innerHTML = "<h2>문서의 내용이 같아 비교할 수 없습니다.</h2>";
+		return;
+	}
+
+	for (const line of parsedContent) {
+		const lineHead = line.substring(0, 1)
+		if (lineHead == '@') {
+			const head_3 = document.createElement("h3");
+			head_3.innerHTML = line;
+			diffDiv.appendChild(head_3);
+		} else if (lineHead == "+") {
+			const pAdd = document.createElement("p");
+			pAdd.classList.add("diff-add");
+			pAdd.innerText = line;
+			diffDiv.appendChild(pAdd);
+		} else if (lineHead == "-") {
+			const pAdd = document.createElement("p");
+			pAdd.classList.add("diff-del");
+			pAdd.innerText = line;
+			diffDiv.appendChild(pAdd);
+		} else {
+			const pAdd = document.createElement("p");
+			// pAdd.classList.add("diff-del");
+			pAdd.innerText = line;
+			diffDiv.appendChild(pAdd);
+		}
+	}
+
+
+}
 // export async function displayLoginPage() {
 // 	setTitle("로그인");
 // 	const loginHtml = `

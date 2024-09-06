@@ -70,7 +70,7 @@ export async function createDocument(documentId, content) {
 		},
 		body: JSON.stringify(content)
 	});
-	return response.ok ? await response.text() : (console.error(response.statusText), "request error");
+	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
 }
 
 export async function fetchDocumentHistory(documentId, start, limit) {
@@ -192,5 +192,10 @@ export async function deleteUser() {
 
 export async function search(to_search) {
 	const response = await fetch(`/search/${to_search}`);
+	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
+}
+
+export async function diff(doc_name, src, dest) {
+	const response = await fetch2(`/diff/${doc_name}&${dest}&${src}`);
 	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
 }

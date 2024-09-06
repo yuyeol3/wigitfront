@@ -6,10 +6,12 @@ export async function displayLoginPage() {
 	setTitle("로그인");
 	const loginHtml = `
         <h1>로그인</h1>
-        <form action="/login" method="post">
-            <input type="text" name="userID" placeholder="아이디" required>
-            <input type="password" name="userPW" placeholder="비밀번호" required>
-            <input type="submit" value="로그인">
+        <form action="/login" method="post" id="loginForm">
+
+
+        <input type="text" name="userID" placeholder="아이디" required>
+        <input type="password" name="userPW" placeholder="비밀번호" required>
+        <input type="submit" value="로그인" id="loginBtn">
         </form>
         <p>계정이 없나요? <a href="./#register">회원가입</a></p>
     `;
@@ -59,7 +61,7 @@ export async function displayUserInfo(userId) {
             <li>회원가입일 : ${rDateStr}</li>
             <li>유저 상태 : ${userInfo.user_status}</li>
         </ul>
-        <h2>최근 기여(10개)</h2>
+        <h2>최근 기여</h2>
     `;
     
     let histories = ""
@@ -222,7 +224,7 @@ export async function displayChangeInfo() {
 
             <div>
                 <label for="userPwd">비밀번호:</label>
-                <input id="userPwd" type="button" value="비밀번호 변경하기" onclick="location.hash = 'changeUserPassword';">
+                <input id="userPwd" type="submit" value="비밀번호 변경하기" onclick="location.hash = 'changeUserPassword';">
             </div>
 
             <div>

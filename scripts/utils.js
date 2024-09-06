@@ -50,3 +50,46 @@ export async function setProgressbar(newWidth) {
 	}
 
 }
+
+export async function diffContentParser(content) {
+
+	// 1. @@ ~ @@ 파싱
+	const result = []
+	for (const line of content) {
+		let processed = line;
+		if (line.substring(0, 1) == "@") {
+			let headInfo = "";
+			for (const c of line.substring(2)) {
+				if (c == "@")
+					break;
+
+				headInfo += c;
+			}
+			result.push(`@@ ${headInfo.trim()} @@`);
+			processed = line.replace(`@@${headInfo}@@`, "");
+		}
+
+		result.push(processed);
+
+	}
+	return result;
+
+}
+
+/**
+ * url의 argument를 파싱해주는 함수
+ * @param {string} urlArgs 
+ * @returns {object[string, string]} 파싱 결과
+ */
+export function urlArgParser(urlArgs) {
+	const urlArgList = urlArgs.split("&");
+	const result = {};
+	for (const arg of urlArgList) {
+		const keyVal = arg.split("=");
+		const argName = keyVal[0];
+		const argVal = keyVal[1];
+		result[ argName ] = argVal;
+	}
+
+	return result;
+}

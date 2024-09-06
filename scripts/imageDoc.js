@@ -68,11 +68,28 @@ export async function loadImage(imageHashId) {
         <h1>${convertDotNotationToPath(decodeURI(imageHashId))}</h1>
         <a href="javascript:null;" id="deleteThis">삭제하기</a>
         <img src="${imageDocu.content}" id="view-image" style="">
+        <button id="copy-code">이미지 코드 복사하기</button>
     `
     // const imageTag = `<img src="${imageDocu.content}">`
     document.getElementById("content").innerHTML = contentHtml;
     setTitle(`wigit: ${decodeURI(imageHashId)}`);
     document.getElementById("deleteThis").onclick = ()=> { deleteImgAction(imageHashId); }
+
+    const copyCodeBtn = document.getElementById("copy-code");
+    copyCodeBtn.onclick = () => {
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+              console.log('Text copied to clipboard');
+            }).catch(function(err) {
+              console.error('Could not copy text: ', err);
+            });
+          }
+          
+
+        const tocopy = `<img src="${imageDocu.content}" onclick="location.href = './#w/${imageHashId}'" width="(너비)px" height="(높이)px">`;
+
+        copyToClipboard(tocopy);
+    }
 }
 
 export async function deleteImgAction(imageHashId) {
