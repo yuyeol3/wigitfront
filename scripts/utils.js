@@ -116,7 +116,7 @@ function decodeHTMLEntities (str) {
 			str = str.replace(regex4, "");
 		}
 
-		str = str.replace(/on[\w]+=/g, "")
+		str = str.replace(/on[\w]+[ ]+=/g, "")
 		str = str.replace(/&gt;/g, ">");
 		str = str.replace(/&lt;/g, "<");
 	}
