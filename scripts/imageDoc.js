@@ -86,7 +86,7 @@ export async function loadImage(imageHashId) {
           }
           
 
-        const tocopy = `<img src="${imageDocu.content}" onclick="location.href = './#w/${imageHashId}'" width="(너비)px" height="(높이)px">`;
+        const tocopy = `<img src="${imageDocu.content}" width="(너비)px" height="(높이)px">`;
 
         copyToClipboard(tocopy);
     }

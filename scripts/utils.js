@@ -116,6 +116,7 @@ function decodeHTMLEntities (str) {
 			str = str.replace(regex4, "");
 		}
 
+		str = str.replace(/on[\w]+=/g, "")
 		str = str.replace(/&gt;/g, ">");
 		str = str.replace(/&lt;/g, "<");
 	}
@@ -132,15 +133,13 @@ export function parseMarkdown(content) {
 	let codeMode = false;
 	for (let line of contentList) {		
 		// svg 관련 처리
+
+
+		line = decodeHTMLEntities(line);
 		line = line.replace("></rect>", "/>");
 		line = line.replace("></line>", "/>");
 		line = line.replace("></circle>", "/>");
 		line = line.replace("></path>", "/>");
-
-		// // > 가 제대로 처리되지 않는 경우
-		// line = line.replace(/&gt;/g, ">");
-		// line = line.replace(/&lt;/g, "＜");
-		line = decodeHTMLEntities(line);
 		result.push(line);
 	}
 	const toParse = result.join("\n");

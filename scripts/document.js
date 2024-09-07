@@ -59,6 +59,23 @@ export async function loadDocument(hash) {
     `;
 	document.getElementById("content").innerHTML = contentHtml + parsedContent;
 	document.getElementById("deleteThis").onclick = () => {deleteDocument(hash)};
+
+	// 이미지 클릭하면 image::링크 뜨게 변경
+	const images = document.getElementById("content").querySelectorAll("img")
+	images.forEach((val, idx)=> {
+		/** @type {[string]} */
+		const pathList = val.getAttribute("src").split("/")
+
+		if (pathList[1] == "assets" && pathList[2] == "images") {
+			const imageUrl = pathList.slice(3).join('').split(".")[0];
+			// console.log(pathList.slice(3));
+			val.onclick = () => {
+				location.hash = `#w/image::${imageUrl}`;
+	
+			}	
+		}
+	})
+
 	setTitle(`WIGIT : ${convertDotNotationToPath(decodeURI(hash))}`);
 }
 
