@@ -1,4 +1,4 @@
-import { diffContentParser, setTitle, urlArgParser } from './utils.js';
+import { diffContentParser, parseMarkdown, setTitle, urlArgParser } from './utils.js';
 import { StatusMessages } from './constants.js';
 import { convertDotNotationToPath, getBasePathFromHash } from './utils.js';
 // import { handleNotFoundError } from './error.js';
@@ -43,7 +43,9 @@ export async function loadDocument(hash) {
 	}
 
 	if (docu.status != StatusMessages.DOC_NOT_EXIST) {
-		parsedContent = marked.parse(docu.content);
+
+
+		parsedContent = parseMarkdown(docu.content);
 	} else {
 		page404();
 		return;
@@ -126,7 +128,7 @@ export async function editDocument(hash) {
 	// 모달 창 보여주기
 	previewButton.onclick = () => {
 		previewDialog.showModal();
-		previewContentDiv.innerHTML = marked.parse(editTextarea.value);
+		previewContentDiv.innerHTML = parseMarkdown(editTextarea.value);
 	}
 
 	// 모달 창 닫기
@@ -210,7 +212,7 @@ export async function addDocument(hash) {
 	// 모달 창 보여주기
 	previewButton.onclick = () => {
 		previewDialog.showModal();
-		previewContentDiv.innerHTML = marked.parse(editTextarea.value);
+		previewContentDiv.innerHTML = parseMarkdown(editTextarea.value);
 	}
 
 	// 모달 창 닫기
@@ -290,13 +292,12 @@ export async function deleteDocument(hash) {
 		// location.reload();
 	}
 }
-(()=>{}).toString
+
 
 export async function diffDocument(path) {
+
 	const pathList = path.split(".");
 	const hash = pathList.slice(0, -1).join(".");
-
-
 
 
 	setTitle(`${decodeURI(hash)} 버전 비교하기`);
@@ -320,14 +321,14 @@ export async function diffDocument(path) {
 			historyElement.innerHTML = `
                 - ${stringDate}(<a href="./#diff/name=${hash}&src=${pathList.at(-1)}&dest=${historyItem.hash}">비교하기</a>)(by ${historyItem.message.split(" ")[0]})
             `;
-			// historyElement.querySelector("a").onclick = () => {diffDisplay(pathList.at(-1), historyItem.hash)}
 
 			historyContainer.appendChild(historyElement);
 		});
 	};
-	loadHistory();
 
+	await loadHistory();
 	// 스크롤 시 추가 히스토리 로딩
+
 	const contentOuterContainer = document.querySelector("#content-outer");
 
 	let reached_100 = false;
@@ -339,13 +340,15 @@ export async function diffDocument(path) {
 		if (scrollRatio >= 90) {
 			start = limit;
 			limit += 30;
-			await loadHistory();
+			loadHistory();
 		}
 
 		if (scrollRatio >= 100) {
 			reached_100 = true;
 		}
 	};
+
+
 
 	// 비교하기
 }

@@ -1,3 +1,5 @@
+import { marked } from "marked";
+
 export function formatPathToDotNotation(path) {
 	return path.split("/").slice(1).join(".")
 }
@@ -93,3 +95,55 @@ export function urlArgParser(urlArgs) {
 
 	return result;
 }
+
+
+function decodeHTMLEntities (str) {
+	if(str !== undefined && str !== null && str !== '') {
+		const tagToRemove = [
+			"script",
+			"style",
+			"div",
+		];
+
+		for (const tagName of tagToRemove) {
+			const regex1 = RegExp(`&lt;${tagName}&gt;`, 'g');
+			const regex2 = RegExp(`&lt;\/${tagName}&gt;`, 'g');
+			const regex3 = RegExp(`<${tagName}>`, 'g');
+			const regex4 = RegExp(`<\/${tagName}>`, 'g');
+			str = str.replace(regex1, "");
+			str = str.replace(regex2, "");
+			str = str.replace(regex3, "");
+			str = str.replace(regex4, "");
+		}
+
+		str = str.replace(/&gt;/g, ">");
+		str = str.replace(/&lt;/g, "<");
+	}
+
+	return str;
+}
+
+
+export function parseMarkdown(content) {
+	
+	/** @type {[string]}*/
+	const contentList = content.split("\n");
+	const result = [];
+	let codeMode = false;
+	for (let line of contentList) {		
+		// svg 관련 처리
+		line = line.replace("></rect>", "/>");
+		line = line.replace("></line>", "/>");
+		line = line.replace("></circle>", "/>");
+		line = line.replace("></path>", "/>");
+
+		// // > 가 제대로 처리되지 않는 경우
+		// line = line.replace(/&gt;/g, ">");
+		// line = line.replace(/&lt;/g, "＜");
+		line = decodeHTMLEntities(line);
+		result.push(line);
+	}
+	const toParse = result.join("\n");
+	return marked.parse(toParse);
+}
+

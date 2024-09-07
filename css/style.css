@@ -8,6 +8,8 @@ table, th, tr, td {
 }
 
 code {
+
+  font-family: monospace;
   display: inline-block;
   max-width: 100%;
   overflow-x: auto;
@@ -157,6 +159,7 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
   background-color: white;
   overflow-y: scroll;
   border: 0.5px solid;
+  margin-left: 4px;
   /* z-index: index 1; ; */
 }
 
@@ -237,6 +240,12 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
 
 #diffDiv .diff-del {
   color: red;
+}
+
+/* code 100% 채우기용*/
+.language-fill100 {
+  width: calc(100% - 6px);
+  margin: 3px;
 }
 
 /* Media queries for responsive adjustments */

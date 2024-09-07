@@ -25,7 +25,8 @@ const Routes = {
 	"#changeUserInfo" : ()=> {displayPasswordCheck(displayChangeInfo)},
 	"#changeUserPassword" : ()=>{ displayPasswordCheck(displayPasswordChange) },
 	"#diffSelect" : diffDocument,
-	"#diff" : diffDisplay
+	"#diff" : diffDisplay,
+	"#footnote": ()=>{}  // 각주를 위한 처리
 };
 
 export const routeHandler = async () => {
