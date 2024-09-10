@@ -98,30 +98,17 @@ export function urlArgParser(urlArgs) {
 
 
 function decodeHTMLEntities (str) {
-	if(str !== undefined && str !== null && str !== '') {
-		const tagToRemove = [
-			"script",
-			"style",
-			"div",
-		];
+	const tempDiv = document.createElement("div");
 
-		for (const tagName of tagToRemove) {
-			const regex1 = RegExp(`&lt;${tagName}&gt;`, 'g');
-			const regex2 = RegExp(`&lt;\/${tagName}&gt;`, 'g');
-			const regex3 = RegExp(`<${tagName}>`, 'g');
-			const regex4 = RegExp(`<\/${tagName}>`, 'g');
-			str = str.replace(regex1, "");
-			str = str.replace(regex2, "");
-			str = str.replace(regex3, "");
-			str = str.replace(regex4, "");
-		}
-
-		str = str.replace(/on[\w]+[ \w\n\t]+=/g, "")
-		str = str.replace(/&gt;/g, ">");
-		str = str.replace(/&lt;/g, "<");
-	}
-
-	return str;
+	tempDiv.innerHTML = str;
+	const codes = tempDiv.querySelectorAll("code");
+	
+	codes.forEach((e)=>{
+		e.innerHTML = e.innerHTML.replace(/&?amp;&?lt;/g, "&lt;");
+		e.innerHTML = e.innerHTML.replace(/&amp;/g, "&");
+	})
+	// console.log(tempDiv.innerHTML);
+	return tempDiv.innerHTML;
 }
 
 
@@ -133,16 +120,18 @@ export function parseMarkdown(content) {
 	let codeMode = false;
 	for (let line of contentList) {		
 		// svg 관련 처리
-
-
-		line = decodeHTMLEntities(line);
+		line = line.replace(/&gt;/g, ">");
 		line = line.replace("></rect>", "/>");
 		line = line.replace("></line>", "/>");
 		line = line.replace("></circle>", "/>");
 		line = line.replace("></path>", "/>");
+
 		result.push(line);
 	}
-	const toParse = result.join("\n");
-	return marked.parse(toParse);
+	let toParse = result.join("\n");
+	toParse =  marked.parse(toParse)
+	toParse = decodeHTMLEntities(toParse);
+
+	return toParse;
 }
 

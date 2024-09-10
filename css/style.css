@@ -222,7 +222,13 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
   margin: 0;
   padding: 0px auto;
   overflow-y: scroll;
+
 }
+
+#preview-content * {
+  pointer-events: none;
+}
+
 
 #loginForm input[type="text"], #loginForm input[type="password"] {
   margin: 2px;

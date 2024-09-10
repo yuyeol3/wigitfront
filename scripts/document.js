@@ -3,7 +3,7 @@ import { StatusMessages } from './constants.js';
 import { convertDotNotationToPath, getBasePathFromHash } from './utils.js';
 // import { handleNotFoundError } from './error.js';
 import { fetchDocument, fetchDocumentData, updateDocument, createDocument, removeDocument, fetchDocumentHistory, diff } from './api.js';
-import { marked } from "marked";
+import DOMpurify from 'dompurify';
 import * as imageDoc from "./imageDoc.js";
 
 
@@ -43,8 +43,6 @@ export async function loadDocument(hash) {
 	}
 
 	if (docu.status != StatusMessages.DOC_NOT_EXIST) {
-
-
 		parsedContent = parseMarkdown(docu.content);
 	} else {
 		page404();
@@ -67,8 +65,14 @@ export async function loadDocument(hash) {
 		const pathList = val.getAttribute("src").split("/")
 
 		if (pathList[1] == "assets" && pathList[2] == "images") {
-			const imageUrl = pathList.slice(3).join('').split(".")[0];
-			// console.log(pathList.slice(3));
+			const imageUrl = (
+				pathList
+				.slice(3)  // 3번부터 사용
+				.join('')  // 다시 붙이기
+				.split(".")  // .으로 분할
+				.slice(0, -1)  // 확장자 빼고 사용
+				.join(".")  // 다시 붙이기
+			);
 			val.onclick = () => {
 				location.hash = `#w/image::${imageUrl}`;
 	
@@ -145,7 +149,7 @@ export async function editDocument(hash) {
 	// 모달 창 보여주기
 	previewButton.onclick = () => {
 		previewDialog.showModal();
-		previewContentDiv.innerHTML = parseMarkdown(editTextarea.value);
+		previewContentDiv.innerHTML = DOMpurify.sanitize(parseMarkdown(editTextarea.value));
 	}
 
 	// 모달 창 닫기
@@ -229,7 +233,7 @@ export async function addDocument(hash) {
 	// 모달 창 보여주기
 	previewButton.onclick = () => {
 		previewDialog.showModal();
-		previewContentDiv.innerHTML = parseMarkdown(editTextarea.value);
+		previewContentDiv.innerHTML = DOMpurify.sanitize(parseMarkdown(editTextarea.value));
 	}
 
 	// 모달 창 닫기

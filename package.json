@@ -6,13 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build & rm -rf ../wigitback/assets/*.js & rm -rf ../wigitback/assets/*.css  & cp -R ./dist/assets ../wigitback/ & cp ./dist/index.html ../wigitback/",
-    "test" : "vite build & rm -rf ../test/assets/*.js & rm -rf ../test/assets/*.css  & cp -R ./dist/assets ../test/ & cp ./dist/index.html ../test/",
+    "test": "vite build & rm -rf ../test/assets/*.js & rm -rf ../test/assets/*.css  & cp -R ./dist/assets ../test/ & cp ./dist/index.html ../test/",
     "preview": "vite preview"
   },
   "devDependencies": {
     "vite": "^5.4.1"
   },
   "dependencies": {
+    "dompurify": "^3.1.6",
     "marked": "^14.0.0"
   }
 }
