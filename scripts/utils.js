@@ -1,4 +1,5 @@
 import { marked } from "marked";
+import katex from "katex";
 
 export function formatPathToDotNotation(path) {
 	return path.split("/").slice(1).join(".")
@@ -111,6 +112,37 @@ function decodeHTMLEntities (str) {
 	return tempDiv.innerHTML;
 }
 
+function latexCompile(str) {
+	const toksCenter = RegExp("\\$\\$[^]+\\$\\$", "g").exec(str);
+	const toks = RegExp("\\$[^]+\\$", "g").exec(str);
+	if (toksCenter !== null) {
+		for (const tok of toksCenter) {
+			let res = tok.replace(/\$/g, "");
+			// res = res.replace(/`/g, "");
+			res = res.replace(/&lt;/g, "<");
+			res = katex.renderToString(res, {
+				throwOnError: false
+			}),
+			str = str.replace(tok, `<p style="text-align: center">${res}</p>`)
+		}
+	}
+
+	
+	if (toks !== null) {
+		for (const tok of toks) {
+			let res = tok.replace(/\$/g, "");
+			// res = res.replace(/`/g, "");
+			res = res.replace(/&lt;/g, "<");
+			res = katex.renderToString(res, {
+				throwOnError: false
+			}),
+			str = str.replace(tok, `<span>${res}</span>`)
+		}
+	}
+
+	return str
+}
+
 
 export function parseMarkdown(content) {
 	
@@ -125,7 +157,7 @@ export function parseMarkdown(content) {
 		line = line.replace("></line>", "/>");
 		line = line.replace("></circle>", "/>");
 		line = line.replace("></path>", "/>");
-
+		line = latexCompile(line);
 		result.push(line);
 	}
 	let toParse = result.join("\n");
