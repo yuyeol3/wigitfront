@@ -113,30 +113,42 @@ function decodeHTMLEntities (str) {
 }
 
 function latexCompile(str) {
-	const toksCenter = RegExp("\\$\\$[^]+\\$\\$", "g").exec(str);
-	const toks = RegExp("\\$[^]+\\$", "g").exec(str);
+	let toksCenter = RegExp("\\$\\$[^]+\\$\\$", "g").exec(str);
+	let toks = RegExp("\\$[^]+\\$", "g").exec(str);
 	if (toksCenter !== null) {
 		for (const tok of toksCenter) {
-			let res = tok.replace(/\$/g, "");
-			// res = res.replace(/`/g, "");
-			res = res.replace(/&lt;/g, "<");
-			res = katex.renderToString(res, {
-				throwOnError: false
-			}),
-			str = str.replace(tok, `<p style="text-align: center">${res}</p>`)
+			const parsedTok = tok.split("$").filter((e)=>{return e !== ''});
+			// let res = tok.replace(/\$/g, "");
+			let cnt = 0;
+			for (const ptok of parsedTok) {
+				if (cnt++ % 2 == 0) {
+					let res = ptok.replace(/&lt;/g, "<");
+					res = katex.renderToString(res, {
+						throwOnError: false
+					}),
+					str = str.replace(`\$\$${ptok}\$\$`, `<p style="text-align: center">${res}</p>`);
+				}
+
+			}		
 		}
 	}
 
 	
 	if (toks !== null) {
 		for (const tok of toks) {
-			let res = tok.replace(/\$/g, "");
-			// res = res.replace(/`/g, "");
-			res = res.replace(/&lt;/g, "<");
-			res = katex.renderToString(res, {
-				throwOnError: false
-			}),
-			str = str.replace(tok, `<span>${res}</span>`)
+			const parsedTok = tok.split("$").filter((e)=>{return e !== ''});
+			// let res = tok.replace(/\$/g, "");
+			let cnt = 0;
+			for (const ptok of parsedTok) {
+				if (cnt++ % 2 == 0) {
+					let res = ptok.replace(/&lt;/g, "<");
+					res = katex.renderToString(res, {
+						throwOnError: false
+					}),
+					str = str.replace(`\$${ptok}\$`, `<span>${res}</span>`);
+				}
+
+			}
 		}
 	}
 
