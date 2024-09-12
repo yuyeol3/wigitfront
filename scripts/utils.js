@@ -125,8 +125,10 @@ function latexCompile(str) {
 					let res = ptok.replace(/&lt;/g, "<");
 					res = katex.renderToString(res, {
 						throwOnError: false
-					}),
-					str = str.replace(`\$\$${ptok}\$\$`, `<p style="text-align: center">${res}</p>`);
+					});
+					
+					if (!ptok.includes("katex-error"))
+						str = str.replace(`\$\$${ptok}\$\$`, `<p style="text-align: center">${res}</p>`);
 				}
 
 			}		
@@ -144,8 +146,9 @@ function latexCompile(str) {
 					let res = ptok.replace(/&lt;/g, "<");
 					res = katex.renderToString(res, {
 						throwOnError: false
-					}),
-					str = str.replace(`\$${ptok}\$`, `<span>${res}</span>`);
+					});
+					if (!ptok.includes("katex-error"))
+						str = str.replace(`\$${ptok}\$`, `<span>${res}</span>`);
 				}
 
 			}
@@ -162,14 +165,22 @@ export function parseMarkdown(content) {
 	const contentList = content.split("\n");
 	const result = [];
 	let codeMode = false;
-	for (let line of contentList) {		
+	for (let line of contentList) {
+		if (line.includes("```")) {
+			codeMode = !codeMode;
+			result.push(line);
+			continue;
+		}
 		// svg 관련 처리
-		line = line.replace(/&gt;/g, ">");
-		line = line.replace("></rect>", "/>");
-		line = line.replace("></line>", "/>");
-		line = line.replace("></circle>", "/>");
-		line = line.replace("></path>", "/>");
-		line = latexCompile(line);
+		if (!codeMode) {
+			line = line.replace(/&gt;/g, ">");
+			line = line.replace("></rect>", "/>");
+			line = line.replace("></line>", "/>");
+			line = line.replace("></circle>", "/>");
+			line = line.replace("></path>", "/>");
+			line = latexCompile(line);
+		}
+
 		result.push(line);
 	}
 	let toParse = result.join("\n");
