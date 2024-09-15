@@ -158,6 +158,7 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
   height: 200px;
   background-color: white;
   overflow-y: scroll;
+  overflow-x: hidden;
   border: 0.5px solid;
   margin-left: 4px;
   /* z-index: index 1; ; */
@@ -214,6 +215,7 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
   height: 80%;
   border-radius: 1%;
   border: 0px;
+  overflow-y: hidden;
 }
 
 #preview-content {

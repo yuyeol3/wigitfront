@@ -7,7 +7,6 @@ export function formatPathToDotNotation(path) {
 
 export function getBasePathFromHash(hash) {
 	const basePath = hash.split("&")[0];
-	console.log(basePath);
 	return basePath.split("/").join(".")
 }
 

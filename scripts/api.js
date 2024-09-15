@@ -37,7 +37,7 @@ export async function updateDocument(documentId, content, hash, redirections, do
 		redirections: redirections,
 		doc_title: doc_title,
 	};
-	console.log(requestBody);
+
 	const response = await fetch2(`/editdoc/${documentId}`, {
 		method: "POST",
 		headers: {

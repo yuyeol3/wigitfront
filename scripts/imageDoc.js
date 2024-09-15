@@ -21,7 +21,7 @@ export function page404() {
  * @param {string} imageHashId 
  */
 export function addImage(imageHashId) {
-    console.log(imageHashId);
+    // console.log(imageHashId);
 
     const addHtml = `
     <h1>문서 추가</h1>
@@ -44,7 +44,7 @@ export function addImage(imageHashId) {
         let file = fileInput.files[0];
         let fileName = imageHashId  // 그냥 imageHashId로 저장하기
         fileName = getBasePathFromHash(fileName);
-        console.log(fileName);
+        // console.log(fileName);
         if (!file) {
             alert("이미지 파일을 선택하세요!");
             return;
@@ -79,7 +79,7 @@ export async function loadImage(imageHashId) {
     copyCodeBtn.onclick = () => {
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(function() {
-              console.log('Text copied to clipboard');
+            //   console.log('Text copied to clipboard');
             }).catch(function(err) {
               console.error('Could not copy text: ', err);
             });

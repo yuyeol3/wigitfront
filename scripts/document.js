@@ -182,7 +182,6 @@ export async function editDocument(hash) {
 			alert("수정되었습니다.");
 			location.hash = "w/" + convertDotNotationToPath(hash);
 		} else if (response.status == StatusMessages.MERGE_CONFLICT) {
-			console.log(response);
 			alert("자동 병합에 실패했습니다. 수동 병합 후 제출 버튼을 누르세요.");
 			document.getElementById("edit").value = response.content;
 			documentHash = "";
@@ -279,15 +278,15 @@ export async function viewDocumentHistory(hash) {
 		});
 	};
 
-	loadHistory();
+	await loadHistory();
 
 	// 스크롤 시 추가 히스토리 로딩
 	const contentOuterContainer = document.querySelector("#content-outer");
 
-	let reached_100 = false;
+	// let reached_100 = false;
 	contentOuterContainer.onscroll = async () => {
-		if (reached_100)
-			return;
+		// if (reached_100)
+		// 	return;
 
 		const scrollRatio = contentOuterContainer.clientHeight / (contentOuterContainer.scrollHeight - contentOuterContainer.scrollTop) * 100;
 		if (scrollRatio >= 90) {
@@ -296,9 +295,9 @@ export async function viewDocumentHistory(hash) {
 			await loadHistory();
 		}
 
-		if (scrollRatio >= 100) {
-			reached_100 = true;
-		}
+		// if (scrollRatio >= 100) {
+		// 	reached_100 = true;
+		// }
 	};
 
 	// 비교하기
@@ -352,21 +351,21 @@ export async function diffDocument(path) {
 
 	const contentOuterContainer = document.querySelector("#content-outer");
 
-	let reached_100 = false;
+	// let reached_100 = false;
 	contentOuterContainer.onscroll = async () => {
-		if (reached_100)
-			return;
+		// if (reached_100)
+		// 	return;
 
 		const scrollRatio = contentOuterContainer.clientHeight / (contentOuterContainer.scrollHeight - contentOuterContainer.scrollTop) * 100;
 		if (scrollRatio >= 90) {
 			start = limit;
 			limit += 30;
-			loadHistory();
+			await loadHistory();
 		}
 
-		if (scrollRatio >= 100) {
-			reached_100 = true;
-		}
+		// if (scrollRatio >= 100) {
+		// 	reached_100 = true;
+		// }
 	};
 
 
