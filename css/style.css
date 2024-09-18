@@ -34,10 +34,18 @@ button, input[type="submit"] {
   height: 22.5px;
 }
 
+.dangerButton {
+  background-color: #ff7272;
+}
+
 a {
   text-decoration: none;
   color: #4747ff;
 }
+
+/* .goto-upperdoc {
+  display: block;
+} */
 
 input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
   border: 0;
@@ -101,10 +109,10 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
 
 #content {
   width: 70%;
-  margin: 0 auto;
+  margin: 10px auto;
   margin-bottom: 21px;
   background-color: white;
-  padding: 0 10px 20vh 10px;
+  padding: 5px 10px 20vh 10px;
   border-radius: 10px;
 }
 
@@ -123,6 +131,7 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
 #title {
   float: left;
 }
+
 
 /* #title-content {
   margin: 0;
@@ -150,6 +159,7 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
 /* #searchbar-wrapper:hover #search-list{
   display: block;
 } */
+
 
 #search-list {
   display: none;
@@ -182,7 +192,6 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
   cursor: pointer;
   padding: 3px;
 }
-
 
 #view-image {
   width: 100%;
@@ -218,6 +227,16 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
   overflow-y: hidden;
 }
 
+.dialog-name {
+  margin: 0;
+  padding: 0;
+}
+
+.manage-element {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 #preview-content {
   height: 90%;
   width: 100%;
@@ -231,6 +250,10 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
   pointer-events: none;
 }
 
+#manage-dialog {
+  border: 0;
+  border-radius: 1%;
+}
 
 #loginForm input[type="text"], #loginForm input[type="password"] {
   margin: 2px;
@@ -276,6 +299,11 @@ input:not( input[type="button"], input[type="submit"], input[type="checkbox"]) {
   }
 
   #preview-dialog {
+    background-color: #313131;
+    color: #fff;
+  }
+
+  #manage-dialog {
     background-color: #313131;
     color: #fff;
   }

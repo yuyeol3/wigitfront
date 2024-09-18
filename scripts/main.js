@@ -14,3 +14,7 @@ document.querySelectorAll("a").forEach(link => {
 // 초기화
 setupSearch();
 loginStatusControl();
+// 10분마다 세션 확인
+setInterval(() => {
+	loginStatusControl();
+}, 1000 * 60 * 10);

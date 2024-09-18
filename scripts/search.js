@@ -6,8 +6,13 @@ export function setupSearch() {
     const searchBar = document.getElementById("search-bar");
     const searchList = document.getElementById("search-list");
 
-	searchBar.onfocus = () => {searchList.style.display = "block";}
-	searchBar.onblur = () => {searchList.style.display = "";}
+    // onfocus -> 검색 목록 보이기
+	searchBar.onfocus = () => {searchList.style.display = "block";}  
+	// onblur -> 검색 목록 숨기기
+    searchBar.onblur = () => {
+        searchList.style.display = "";
+        // searchList.innerHTML = "";
+    }
 
     async function handleSearch(e, title) {
         if (searchBar.value === "")
@@ -27,9 +32,7 @@ export function setupSearch() {
     }
 
     let delayTimer = null;
-
     async function updateSearchedList(e) {
-        // Ensure that the update happens only after IME composition has finished
         let target = searchBar.value;
 
 		searchBar.value = target;

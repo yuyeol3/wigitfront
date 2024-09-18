@@ -2,9 +2,10 @@ import { diffContentParser, parseMarkdown, setTitle, urlArgParser } from './util
 import { StatusMessages } from './constants.js';
 import { convertDotNotationToPath, getBasePathFromHash } from './utils.js';
 // import { handleNotFoundError } from './error.js';
-import { fetchDocument, fetchDocumentData, updateDocument, createDocument, removeDocument, fetchDocumentHistory, diff } from './api.js';
+import { fetchDocument, updateDocument, createDocument, removeDocument, fetchDocumentHistory, diff, checkManager} from './api.js';
 import DOMpurify from 'dompurify';
 import * as imageDoc from "./imageDoc.js";
+import * as manage from "./manage.js";
 
 
 export function page404() {
@@ -32,7 +33,7 @@ export async function loadDocument(hash) {
 		imageDoc.loadImage(hash);
 		return;
 	}
-
+	const managerPermInfo = await checkManager('document');
 	const docu = await fetchDocument(hash);
 	let parsedContent;
 
@@ -48,15 +49,62 @@ export async function loadDocument(hash) {
 		page404();
 		return;
 	}
-		
+
+	/** @type {string} */
+	const docTitle = convertDotNotationToPath(decodeURI(hash));
 	const contentHtml = `
-        <h1>${convertDotNotationToPath(decodeURI(hash))}</h1>
+		
+        <h1 class="doc-title"><a class="goto-upperdoc" id="goto-upper"></a>${docTitle}</h1>
+
         <a href="./#edit/${convertDotNotationToPath(hash)}">수정하기</a>
         <a href="./#history/${convertDotNotationToPath(hash)}">히스토리 보기</a>
-        <a href="javascript:null;" id="deleteThis">삭제하기</a>
-    `;
+        <a href="javascript:null;" id="deleteThis">${ managerPermInfo?.status === StatusMessages.SUCCESS ? '삭제하기' : '' }</a>
+		${managerPermInfo?.content?.is_operator === true 
+		  ? '<a id="manage" href="javascript:null;">관리하기</a>' : ''}
+
+		<dialog id="manage-dialog">
+	 		<p class="dialog-name"><button id="close-dialog">X</button> 관리하기</p>
+	 		<div id="manage-content"></div>
+	  	</dialog>
+	`;
 	document.getElementById("content").innerHTML = contentHtml + parsedContent;
 	document.getElementById("deleteThis").onclick = () => {deleteDocument(hash)};
+	
+	const gotoUpper = document.getElementById("goto-upper");
+	if (docTitle.indexOf("/") !== -1) {
+		gotoUpper.innerHTML = " < ";
+		gotoUpper.setAttribute("href", 
+			"#w/" + docTitle.split("/").slice(0, -1).join("/")
+		);
+
+
+	}
+
+
+	const manageDialog = document.getElementById("manage-dialog");
+	const closeManageButton = document.getElementById("close-dialog");
+	const manageButton = document.getElementById("manage");
+
+	// manageDialog 설정
+	if (managerPermInfo?.content?.is_operator){
+		/** @type {[string]} */
+		const permList = managerPermInfo.content.perm_list;
+		const managableUserList = managerPermInfo.content.managable_perms;
+
+		
+		if (permList.indexOf("REMOVE_PERMANENT") !== -1) {
+			manage.docDeletePerm(manageDialog, hash);
+		}
+		// 모달 창 보여주기
+		manageButton.onclick = () => {
+			manageDialog.showModal();
+		}
+
+		// 모달 창 닫기
+		closeManageButton.onclick = ()=> {
+			manageDialog.close();
+		}
+	}
 
 	// 이미지 클릭하면 image::링크 뜨게 변경
 	const images = document.getElementById("content").querySelectorAll("img")
@@ -91,7 +139,7 @@ export async function editDocument(hash) {
 	}
 	documentData.doc_title = convertDotNotationToPath(documentData.doc_title);
 
-	setTitle(`${decodeURI(hash)} 수정`);
+	setTitle(`${convertDotNotationToPath(decodeURI(hash))} 수정`);
 	const editHtml = `
       <h1>문서 수정</h1>
 	  <h2>제목</h2>
@@ -100,10 +148,12 @@ export async function editDocument(hash) {
       <textarea id='edit'></textarea>
       <h2>리디렉션</h2>
 	  <input id="redirections" placeholder="리디렉션 목록">
-	  
-	  <button id='upload'>업로드</button>
+	  <hr> 
+	  <div>
+	  	<button id='upload'>업로드</button>
+	  </div>
 	  <dialog id="preview-dialog">
-	 	<p><button id="close-dialog">X</button> 결과 미리보기</p>
+	 	<p class="dialog-name"><button id="close-dialog">X</button> 결과 미리보기</p>
 	 	<div id="preview-content"></div>
 	  </dialog>
     `;
@@ -192,13 +242,14 @@ export async function editDocument(hash) {
 }
 
 export async function addDocument(hash) {
-	setTitle(`${decodeURI(hash)} 추가`);
+	setTitle(`${convertDotNotationToPath( decodeURI(hash) )} 추가`);
 	const addHtml = `
       <h1>문서 추가 <button id="preview">결과 미리보기</button></h1>
       <textarea id='edit'></textarea>
+	  <hr>
       <button id='upload'>업로드</button>
 	  <dialog id="preview-dialog">
-	 	<p><button id="close-dialog">X</button> 결과 미리보기</p>
+	 	<p class="dialog-name"><button id="close-dialog">X</button> 결과 미리보기</p>
 	 	<div id="preview-content"></div>
 	  </dialog>
     `;
@@ -253,7 +304,7 @@ export async function addDocument(hash) {
 }
 
 export async function viewDocumentHistory(hash) {
-	setTitle(`${decodeURI(hash)} 히스토리`);
+	setTitle(`${convertDotNotationToPath(decodeURI(hash))} 히스토리`);
 	const historyHtml = `
         <div id="doc-history">
             <h1>${convertDotNotationToPath(decodeURI(hash))}/히스토리</h1>
@@ -283,21 +334,13 @@ export async function viewDocumentHistory(hash) {
 	// 스크롤 시 추가 히스토리 로딩
 	const contentOuterContainer = document.querySelector("#content-outer");
 
-	// let reached_100 = false;
 	contentOuterContainer.onscroll = async () => {
-		// if (reached_100)
-		// 	return;
-
 		const scrollRatio = contentOuterContainer.clientHeight / (contentOuterContainer.scrollHeight - contentOuterContainer.scrollTop) * 100;
 		if (scrollRatio >= 90) {
 			start = limit;
-			limit += 30;
+			limit += 10;
 			await loadHistory();
 		}
-
-		// if (scrollRatio >= 100) {
-		// 	reached_100 = true;
-		// }
 	};
 
 	// 비교하기
@@ -320,7 +363,7 @@ export async function diffDocument(path) {
 	const hash = pathList.slice(0, -1).join(".");
 
 
-	setTitle(`${decodeURI(hash)} 버전 비교하기`);
+	setTitle(`${convertDotNotationToPath(decodeURI(hash))} 버전 비교하기`);
 	const historyHtml = `
         <div id="doc-history">
             <h1>비교할 버전을 선택하세요.</h1>
@@ -351,26 +394,16 @@ export async function diffDocument(path) {
 
 	const contentOuterContainer = document.querySelector("#content-outer");
 
-	// let reached_100 = false;
 	contentOuterContainer.onscroll = async () => {
-		// if (reached_100)
-		// 	return;
-
 		const scrollRatio = contentOuterContainer.clientHeight / (contentOuterContainer.scrollHeight - contentOuterContainer.scrollTop) * 100;
 		if (scrollRatio >= 90) {
 			start = limit;
-			limit += 30;
+			limit += 10;
 			await loadHistory();
 		}
 
-		// if (scrollRatio >= 100) {
-		// 	reached_100 = true;
-		// }
+	
 	};
-
-
-
-	// 비교하기
 }
 
 
@@ -420,17 +453,4 @@ export async function diffDisplay(hash) {
 		}
 	}
 
-
 }
-// export async function displayLoginPage() {
-// 	setTitle("로그인");
-// 	const loginHtml = `
-//         <h1>로그인</h1>
-//         <form action="/login" method="post">
-//             <input type="text" name="userID" placeholder="아이디" required>
-//             <input type="password" name="userPW" placeholder="비밀번호" required>
-//             <input type="submit" value="로그인">
-//         </form>
-//     `;
-// 	document.getElementById("content").innerHTML = loginHtml;
-// }

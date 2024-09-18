@@ -199,3 +199,14 @@ export async function diff(doc_name, src, dest) {
 	const response = await fetch2(`/diff/${doc_name}&${dest}&${src}`);
 	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
 }
+
+export async function checkManager(perm_target) {
+	const response = await fetch("/checkmng/" + perm_target)
+	return response.ok ? await response.json() : (console.error(response.statusText), "request error");
+
+}
+
+export async function removeDocPerm(docName) {
+	const response = await fetch2(`/deletedoc/perm/${docName}`);
+	return response.ok ? await response.json() : (console.error(response.statusText), "response error");
+}
