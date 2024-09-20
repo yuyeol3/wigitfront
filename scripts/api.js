@@ -3,10 +3,22 @@ import { setProgressbar } from "./utils";
 export async function fetch2(url, params) {
 	await setProgressbar(0);
 	await setProgressbar(10);
-	const response = await fetch(url, params);
-	await setProgressbar(100);
+
+	try {
+		const timeoutPromise = new Promise(function (resolve, reject) {
+			setTimeout(() => {
+				reject(new Error("Network Timeout"))
+			}, 1000 * 10);
+		})
+		const response = await Promise.race([fetch(url, params), timeoutPromise]);
+		return response;
+	} catch (err) {
+		console.error(err);
+		throw err;
+	} finally {
+		await setProgressbar(100);
+	}
 	// setTimeout(()=>{setProgressbar(0)} , 450);
-	return response;
 }
 
 
